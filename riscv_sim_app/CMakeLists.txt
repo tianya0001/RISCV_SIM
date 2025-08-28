@@ -7,13 +7,32 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 20)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(SDL3_x86_64_INCLUDE_DIR
-    E:/Project/RISCV/RISCV_SIM/libs/SDL3-3.2.20/x86_64-w64-mingw32/include
-)
+set(CMAKE_VERBOSE_MAKEFILE ON)  # 对所有构建生效
 
-set(SDL3_x86_64_LIBRARY_DIR
-    E:/Project/RISCV/RISCV_SIM/libs/SDL3-3.2.20/x86_64-w64-mingw32/lib
-)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "目标系统: Windows")
+    set(SDL3_x86_64_INCLUDE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/SDL3-3.2.20/x86_64-w64-mingw32/include
+    )
+
+    set(SDL3_x86_64_LIBRARY_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/SDL3-3.2.20/x86_64-w64-mingw32/lib
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(STATUS "目标系统: Linux")
+    set(SDL3_x86_64_INCLUDE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/SDL-release-3.2.20/include
+    )
+
+    set(SDL3_x86_64_LIBRARY_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/SDL-release-3.2.20/build
+    )
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "目标系统: macOS/iOS")
+else()
+    message(STATUS "目标系统: ${CMAKE_SYSTEM_NAME}（未知）")
+endif()
 
 set(PROJECT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/App/main.cpp
@@ -40,8 +59,10 @@ target_link_libraries(${PROJECT_NAME}
     SDL3
 )
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${SDL3_x86_64_LIBRARY_DIR}/../bin/SDL3.dll
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>
-)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${SDL3_x86_64_LIBRARY_DIR}/../bin/SDL3.dll
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
+endif()

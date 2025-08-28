@@ -1,3 +1,4 @@
 build/
 libs/
 test_project/build/
+.vscode/
