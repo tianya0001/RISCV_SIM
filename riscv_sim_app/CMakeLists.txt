@@ -32,7 +32,16 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${SDL3_x86_64_INCLUDE_DIR} 
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${SDL3_x86_64_LIBRARY_DIR}/libSDL3.dll.a
-    ${SDL3_x86_64_LIBRARY_DIR}/libSDL3_test.a
+target_link_directories( ${PROJECT_NAME} PRIVATE
+    ${SDL3_x86_64_LIBRARY_DIR}
+)
+
+target_link_libraries(${PROJECT_NAME}
+    SDL3
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${SDL3_x86_64_LIBRARY_DIR}/../bin/SDL3.dll
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
